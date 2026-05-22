@@ -5,8 +5,7 @@
   "scripts": {
     "dev": "node --watch src/server.js",
     "build": "cd ../frontend && npm install && npm run build",
-    "start": "node src/server.js",
-    "postinstall": "npm run build"
+    "start": "node src/server.js"
   },
   "dependencies": {
     "@prisma/client": "^5.20.0",
