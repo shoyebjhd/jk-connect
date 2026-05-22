@@ -13,9 +13,20 @@ app.use(cors());
 app.use(express.json({ limit: "50mb" }));
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
-const frontendDist = path.join(__dirname, "../../frontend/dist");
-if (fs.existsSync(frontendDist)) {
+const possiblePaths = [
+  path.join(__dirname, "../../frontend/dist"),
+  path.join(process.cwd(), "../frontend/dist"),
+  path.join(process.cwd(), "frontend/dist"),
+];
+let frontendDist = null;
+for (const p of possiblePaths) {
+  if (fs.existsSync(p)) { frontendDist = p; break; }
+}
+if (frontendDist) {
+  console.log("Serving frontend from:", frontendDist);
   app.use(express.static(frontendDist));
+} else {
+  console.warn("Frontend dist not found at any of:", possiblePaths);
 }
 
 import authRoutes from "./routes/auth.js";
@@ -47,7 +58,7 @@ app.get("/api/health", (_req, res) => {
   res.json({ status: "ok" });
 });
 
-if (fs.existsSync(frontendDist)) {
+if (frontendDist) {
   app.get("*", (_req, res) => {
     res.sendFile(path.join(frontendDist, "index.html"));
   });
