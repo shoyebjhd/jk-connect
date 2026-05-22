@@ -62,6 +62,12 @@ if (frontendDist) {
   app.get("*", (_req, res) => {
     res.sendFile(path.join(frontendDist, "index.html"));
   });
+} else {
+  app.get("*", (_req, res) => {
+    const fallback = path.join(process.cwd(), "public/index.html");
+    if (fs.existsSync(fallback)) return res.sendFile(fallback);
+    res.status(200).send("Frontend not built yet. Run: cd frontend && npm run build");
+  });
 }
 
 app.listen(PORT, () => {
