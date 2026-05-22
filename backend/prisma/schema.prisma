@@ -1,0 +1,204 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  FREELANCER
+  CLIENT
+}
+
+enum TaskStatus {
+  PLANNING
+  ONGOING
+  HOLD
+  COMPLETED
+  DECLINED
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum BillingType {
+  HOURLY
+  FIXED
+}
+
+enum InvoiceStatus {
+  UNPAID
+  PAID
+  CANCELLED
+}
+
+enum InviteStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String    @unique
+  password  String
+  role      Role      @default(CLIENT)
+  createdAt DateTime  @default(now())
+
+  clientProjects       Project[]    @relation("ClientProjects")
+  freelancerProjects   Project[]    @relation("FreelancerProjects")
+  comments             Comment[]
+  timeLogs             TimeLog[]
+  invoices             Invoice[]    @relation("ClientInvoices")
+  messages             Message[]
+  sentInvites          Invitation[] @relation("SentInvitations")
+  freelancerConnections Connection[] @relation("FreelancerConnections")
+  clientConnections    Connection[] @relation("ClientConnections")
+  notifications        Notification[]
+}
+
+model Connection {
+  id           Int      @id @default(autoincrement())
+  freelancerId Int
+  clientId     Int
+  createdAt    DateTime @default(now())
+
+  freelancer User @relation("FreelancerConnections", fields: [freelancerId], references: [id])
+  client     User @relation("ClientConnections", fields: [clientId], references: [id])
+  messages   Message[]
+
+  @@unique([freelancerId, clientId])
+}
+
+model Project {
+  id          Int         @id @default(autoincrement())
+  name        String
+  description String?     @db.Text
+  billingType BillingType @default(HOURLY)
+  hourlyRate  Float?
+  fixedPrice  Float?
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+
+  clientId     Int
+  client       User       @relation("ClientProjects", fields: [clientId], references: [id])
+  freelancerId Int
+  freelancer   User       @relation("FreelancerProjects", fields: [freelancerId], references: [id])
+  tasks        Task[]
+  timeLogs     TimeLog[]
+  messages     Message[]
+}
+
+model Task {
+  id          Int        @id @default(autoincrement())
+  title       String
+  description String?    @db.Text
+  status      TaskStatus @default(PLANNING)
+  priority    Priority   @default(MEDIUM)
+  dueDate     DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  projectId   Int
+  project     Project    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  comments    Comment[]
+  timeLogs    TimeLog[]
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String   @db.Text
+  attachmentUrl  String?
+  attachmentName String?
+  attachmentType String?
+  createdAt DateTime @default(now())
+
+  taskId    Int
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  authorId  Int
+  author    User     @relation(fields: [authorId], references: [id])
+}
+
+model Message {
+  id        Int      @id @default(autoincrement())
+  content   String   @db.Text
+  attachmentUrl  String?
+  attachmentName String?
+  attachmentType String?
+  createdAt DateTime @default(now())
+
+  authorId     Int
+  author       User        @relation(fields: [authorId], references: [id])
+  projectId    Int?
+  project      Project?    @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  connectionId Int?
+  connection   Connection? @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+}
+
+model TimeLog {
+  id        Int       @id @default(autoincrement())
+  startTime DateTime
+  endTime   DateTime?
+  duration  Int?
+  notes     String?
+  isBilled  Boolean   @default(false)
+  isRunning Boolean   @default(true)
+  createdAt DateTime  @default(now())
+
+  projectId Int
+  project   Project   @relation(fields: [projectId], references: [id])
+  taskId    Int?
+  task      Task?     @relation(fields: [taskId], references: [id])
+  userId    Int
+  user      User      @relation(fields: [userId], references: [id])
+  invoiceId Int?
+  invoice   Invoice?  @relation(fields: [invoiceId], references: [id])
+}
+
+model Invoice {
+  id            Int           @id @default(autoincrement())
+  invoiceNumber String        @unique
+  billingType   BillingType
+  amount        Float
+  startDate     DateTime?
+  endDate       DateTime?
+  fromAddress   String?
+  toAddress     String?
+  status        InvoiceStatus @default(UNPAID)
+  notes         String?
+  createdAt     DateTime      @default(now())
+
+  clientId  Int
+  client    User      @relation("ClientInvoices", fields: [clientId], references: [id])
+  timeLogs  TimeLog[]
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  type      String
+  title     String
+  message   String?
+  link      String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Invitation {
+  id            Int          @id @default(autoincrement())
+  senderId      Int
+  receiverEmail String
+  targetRole    Role
+  status        InviteStatus @default(PENDING)
+  createdAt     DateTime     @default(now())
+
+  sender User @relation("SentInvitations", fields: [senderId], references: [id])
+}
