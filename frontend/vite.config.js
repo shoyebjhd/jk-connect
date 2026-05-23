@@ -59,6 +59,7 @@ export default defineConfig({
     },
   },
   server: {
+    allowedHosts: true,
     proxy: {
       '/api': 'http://localhost:5001',
       '/uploads': 'http://localhost:5001',
