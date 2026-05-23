@@ -6,18 +6,7 @@ import { fileURLToPath } from "url";
 import { authenticate } from "../middleware/auth.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const UPLOAD_DIR = (() => {
-  const candidates = [
-    path.join(process.cwd(), "backend", "uploads"),
-    path.join(__dirname, "../../uploads"),
-    path.join(__dirname, "../uploads"),
-  ];
-  for (const p of candidates) {
-    try { fs.mkdirSync(p, { recursive: true }); return p; } catch {}
-  }
-  return candidates[0];
-})();
-console.log("Uploads stored at:", UPLOAD_DIR);
+const UPLOAD_DIR = path.join(__dirname, "../../uploads");
 
 const storage = multer.diskStorage({
   destination: UPLOAD_DIR,
