@@ -61,13 +61,13 @@ export default function Chat() {
     : "Messages";
 
   return (
-    <div className="p-6 h-[calc(100vh-8rem)] flex flex-col">
-      <h1 className="text-2xl font-bold tracking-tight mb-4">{title}</h1>
-      <p className="text-sm text-muted-foreground -mt-3 mb-4">
+    <div className="p-3 sm:p-6 h-[calc(100dvh-8rem)] flex flex-col">
+      <h1 className="text-lg sm:text-2xl font-bold tracking-tight mb-3 sm:mb-4">{title}</h1>
+      <p className="text-xs sm:text-sm text-muted-foreground -mt-2 sm:-mt-3 mb-3 sm:mb-4">
         {isProjectChat ? `Chat room for project #${projectId}` : "General discussion between all team members."}
       </p>
 
-      <div className="flex-1 overflow-y-auto space-y-3 rounded-xl border bg-card p-4 mb-4">
+      <div className="flex-1 overflow-y-auto space-y-3 rounded-xl border bg-card p-2 sm:p-4 mb-4">
         {loading ? (
           <div className="flex items-center justify-center h-full">
             <div className="animate-pulse text-muted-foreground">Loading messages...</div>
@@ -81,7 +81,7 @@ export default function Chat() {
             <div key={m.id}
               className={`flex ${m.authorId === user?.userId ? "justify-end" : "justify-start"}`}
             >
-              <div className={`max-w-[70%] rounded-xl p-3 ${
+              <div className={`max-w-[85%] sm:max-w-[70%] rounded-xl p-3 ${
                 m.authorId === user?.userId
                   ? "bg-primary text-primary-foreground rounded-br-sm"
                   : "bg-muted rounded-bl-sm"
@@ -97,7 +97,7 @@ export default function Chat() {
                     {m.attachmentType?.startsWith("image/") ? (
                       <div className="relative group inline-block">
                         <a href={m.attachmentUrl} target="_blank" rel="noopener noreferrer">
-                          <img src={m.attachmentUrl} alt={m.attachmentName || "image"} className="max-w-full max-h-48 rounded-lg object-cover" />
+                          <img src={m.attachmentUrl} alt={m.attachmentName || "image"} className="max-w-full max-h-36 sm:max-h-48 rounded-lg object-cover" />
                         </a>
                         <a
                           href={m.attachmentUrl}
