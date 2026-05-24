@@ -299,7 +299,7 @@ const db = new Proxy({}, {
           }
 
           if (method === "create") {
-            const data = args.data;
+            const data = Object.fromEntries(Object.entries(args.data).filter(([, v]) => v !== undefined));
             const keys = Object.keys(data);
             const placeholders = keys.map(() => "?").join(", ");
             const values = keys.map(k => data[k]);
@@ -312,7 +312,8 @@ const db = new Proxy({}, {
           }
 
           if (method === "update") {
-            const data = args.data;
+            const raw = args.data;
+            const data = Object.fromEntries(Object.entries(raw).filter(([, v]) => v !== undefined));
             const setKeys = Object.keys(data);
             const setClause = setKeys.map(k => `\`${k}\` = ?`).join(", ");
             const setValues = setKeys.map(k => data[k]);
