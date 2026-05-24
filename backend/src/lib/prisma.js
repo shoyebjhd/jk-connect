@@ -303,7 +303,14 @@ const db = new Proxy({}, {
               values,
             );
             const [rows] = await pool.execute(`SELECT * FROM \`${table}\` WHERE id = ?`, [result.insertId]);
-            return rows[0];
+            let row = rows[0];
+            if (include && row) {
+              row = nestRow(row, table, include);
+              for (const rel of (include ? Object.entries(include).filter(([, v]) => v === true).map(([k]) => k) : [])) {
+                row[rel] = [];
+              }
+            }
+            return row;
           }
 
           if (method === "update") {
