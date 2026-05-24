@@ -10,6 +10,7 @@ import Dashboard from "./pages/Dashboard";
 const Projects = lazy(() => import("./pages/Projects"));
 const Tasks = lazy(() => import("./pages/Tasks"));
 const Invoices = lazy(() => import("./pages/Invoices"));
+const TimeReport = lazy(() => import("./pages/TimeReport"));
 const Chat = lazy(() => import("./pages/Chat"));
 const Messages = lazy(() => import("./pages/Messages"));
 const Network = lazy(() => import("./pages/Network"));
@@ -26,6 +27,7 @@ const titles = {
   "/chat": "Messages — JKAAS",
   "/chat/general": "General Chat — JKAAS",
   "/network": "Network — JKAAS",
+  "/timereport": "Time Report — JKAAS",
   "/account": "My Account — JKAAS",
   "/login": "Login — JKAAS",
 };
@@ -79,6 +81,7 @@ function AppRoutes() {
           <Route path="/chat/general" element={<ProtectedLayout><Chat /></ProtectedLayout>} />
           <Route path="/chat/project/:projectId" element={<ProtectedLayout><Chat /></ProtectedLayout>} />
           <Route path="/network" element={<ProtectedLayout><Network /></ProtectedLayout>} />
+          <Route path="/timereport" element={<ProtectedLayout><TimeReport /></ProtectedLayout>} />
           <Route path="/account" element={<ProtectedLayout><Account /></ProtectedLayout>} />
           <Route path="/404" element={<NotFound />} />
           <Route path="*" element={<Navigate to="/404" replace />} />

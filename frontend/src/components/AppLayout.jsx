@@ -8,7 +8,7 @@ import GlobalTimer from "./GlobalTimer";
 import NotificationDropdown from "./NotificationDropdown";
 import {
   LayoutDashboard, FolderKanban, ListChecks, MessageSquare, FileText, Users,
-  ChevronLeft, ChevronRight, Sun, Moon, LogOut, Menu, User,
+  ChevronLeft, ChevronRight, Sun, Moon, LogOut, Menu, User, Clock,
 } from "lucide-react";
 import {
   DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator,
@@ -20,7 +20,8 @@ const sidebarLinks = [
   { to: "/projects", label: "Projects", icon: FolderKanban },
   { to: "/tasks", label: "Tasks", icon: ListChecks },
   { to: "/chat", label: "Messages", icon: MessageSquare },
-  { to: "/invoices", label: "Invoices", icon: FileText },
+  { to: "/timereport", label: "Time Report", icon: Clock, freelancerOnly: true },
+  { to: "/invoices", label: "Invoices", icon: FileText, freelancerOnly: true },
   { to: "/network", label: "Network", icon: Users },
 ];
 
@@ -32,6 +33,7 @@ const pageTitles = {
   "/chat/general": "General Chat",
   "/invoices": "Invoices",
   "/network": "Network",
+  "/timereport": "Time Report",
 };
 
 export default function AppLayout({ children }) {
@@ -80,7 +82,7 @@ export default function AppLayout({ children }) {
       {/* Nav Links */}
       <nav className="flex-1 px-3 space-y-1">
         {sidebarLinks.map((link) => {
-          if (link.to === "/invoices" && !isFreelancer) return null;
+          if (link.freelancerOnly && !isFreelancer) return null;
           const isActive = currentPath === link.to || (link.to !== "/" && pathname.startsWith(link.to));
           return (
             <Link
@@ -161,7 +163,7 @@ export default function AppLayout({ children }) {
           </div>
           <div className="flex flex-col gap-1 px-3">
             {sidebarLinks.map((link) => {
-              if (link.to === "/invoices" && !isFreelancer) return null;
+              if (link.freelancerOnly && !isFreelancer) return null;
               const isActive = currentPath === link.to;
               return (
                 <Link
@@ -218,8 +220,8 @@ export default function AppLayout({ children }) {
             </button>
             <h1 className="text-sm font-medium">{title}</h1>
           </div>
-          <div className="flex items-center gap-3">
-            {isFreelancer && <GlobalTimer />}
+          <div className="flex items-center gap-2 sm:gap-3">
+            {isFreelancer && <div className="hidden sm:block"><GlobalTimer /></div>}
             <button
               onClick={toggle}
               className="text-muted-foreground hover:text-foreground transition-colors p-1.5 rounded-lg hover:bg-muted"
