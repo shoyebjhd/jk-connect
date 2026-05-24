@@ -112,6 +112,16 @@ export default function AppLayout({ children }) {
         </div>
       )}
 
+      {/* Logout at bottom of sidebar */}
+      <div className="p-3 border-t border-border/50">
+        <button
+          onClick={logout}
+          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all w-full"
+        >
+          <LogOut size={18} className="shrink-0" />
+          {!collapsed && <span>Logout</span>}
+        </button>
+      </div>
     </div>
   );
 
@@ -163,6 +173,15 @@ export default function AppLayout({ children }) {
                 </Link>
               );
             })}
+          </div>
+          <div className="p-3 mt-auto border-t border-border/50">
+            <button
+              onClick={() => { logout(); setMobileOpen(false); }}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all w-full"
+            >
+              <LogOut size={18} />
+              <span>Logout</span>
+            </button>
           </div>
         </SheetContent>
       </Sheet>
