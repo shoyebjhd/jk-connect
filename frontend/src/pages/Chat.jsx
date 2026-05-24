@@ -27,8 +27,12 @@ export default function Chat() {
 
   useEffect(() => {
     fetchMessages();
-    const iv = setInterval(fetchMessages, 5000);
-    return () => clearInterval(iv);
+    const iv = setInterval(() => {
+      if (!document.hidden) fetchMessages();
+    }, 30000);
+    const onVisible = () => { if (!document.hidden) fetchMessages(); };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => { clearInterval(iv); document.removeEventListener("visibilitychange", onVisible); };
   }, [projectId]);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);

@@ -51,8 +51,12 @@ export default function AppLayout({ children }) {
       } catch {}
     };
     fetchPending();
-    const iv = setInterval(fetchPending, 15000);
-    return () => clearInterval(iv);
+    const iv = setInterval(() => {
+      if (!document.hidden) fetchPending();
+    }, 60000);
+    const onVisible = () => { if (!document.hidden) fetchPending(); };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => { clearInterval(iv); document.removeEventListener("visibilitychange", onVisible); };
   }, [user]);
 
   const title = Object.entries(pageTitles).find(([k]) => pathname.startsWith(k))?.[1] || "JKAAS";

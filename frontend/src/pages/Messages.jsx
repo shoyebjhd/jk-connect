@@ -35,8 +35,12 @@ export default function Messages() {
 
   useEffect(() => {
     fetchMessages();
-    const iv = setInterval(fetchMessages, 10000);
-    return () => clearInterval(iv);
+    const iv = setInterval(() => {
+      if (!document.hidden) fetchMessages();
+    }, 30000);
+    const onVisible = () => { if (!document.hidden) fetchMessages(); };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => { clearInterval(iv); document.removeEventListener("visibilitychange", onVisible); };
   }, [selectedConn]);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);

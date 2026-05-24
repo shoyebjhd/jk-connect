@@ -46,8 +46,12 @@ export default function NotificationDropdown() {
   useEffect(() => {
     fetchUnread();
     fetchAll();
-    const iv = setInterval(fetchUnread, 15000);
-    return () => clearInterval(iv);
+    const iv = setInterval(() => {
+      if (!document.hidden) fetchUnread();
+    }, 30000);
+    const onVisible = () => { if (!document.hidden) fetchUnread(); };
+    document.addEventListener("visibilitychange", onVisible);
+    return () => { clearInterval(iv); document.removeEventListener("visibilitychange", onVisible); };
   }, []);
 
   useEffect(() => {
