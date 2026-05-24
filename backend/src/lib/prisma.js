@@ -164,8 +164,6 @@ function buildWhereSimple(where, table) {
         parts.push(`\`${table}\`.\`${key}\` LIKE ?`);
         values.push(`%${val.contains}%`);
       } else if (val.some) {
-        // Has-many relation filter: timeLogs: { some: { projectId } }
-        // Determine the related table and FK
         const hasManyMap = { timeLogs: { table: "TimeLog", fk: `${table === "Invoice" ? "invoice" : table.toLowerCase()}Id` } };
         const hm = hasManyMap[key];
         if (hm) {
@@ -176,8 +174,15 @@ function buildWhereSimple(where, table) {
           }
           parts.push(`EXISTS (SELECT 1 FROM \`${hm.table}\` WHERE \`${hm.table}\`.\`${hm.fk}\` = \`${table}\`.id AND ${subParts.join(" AND ")})`);
         }
+      } else if (val.gte != null || val.gt != null || val.lte != null || val.lt != null) {
+        const ops = { gte: ">=", gt: ">", lte: "<=", lt: "<" };
+        for (const [op, field] of Object.entries(ops)) {
+          if (val[op] != null) {
+            parts.push(`\`${table}\`.\`${key}\` ${field} ?`);
+            values.push(val[op]);
+          }
+        }
       } else {
-        // Relation filter e.g. project: { clientId: 5 } → EXISTS subquery
         const rel = relMap[table]?.[key];
         if (rel) {
           const subParts = [];
@@ -303,14 +308,7 @@ const db = new Proxy({}, {
               values,
             );
             const [rows] = await pool.execute(`SELECT * FROM \`${table}\` WHERE id = ?`, [result.insertId]);
-            let row = rows[0];
-            if (include && row) {
-              row = nestRow(row, table, include);
-              for (const rel of (include ? Object.entries(include).filter(([, v]) => v === true).map(([k]) => k) : [])) {
-                row[rel] = [];
-              }
-            }
-            return row;
+            return rows[0];
           }
 
           if (method === "update") {
