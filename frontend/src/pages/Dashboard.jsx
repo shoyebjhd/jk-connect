@@ -282,7 +282,7 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="p-6 space-y-6">
+      <div className="p-3 sm:p-6 space-y-6">
         <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
           {[1, 2, 3, 4].map((i) => <StatCardSkeleton key={i} />)}
         </div>
@@ -291,7 +291,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-3 sm:p-6 space-y-6">
       {isFreelancer ? (
         <>
           {/* Stat Cards */}

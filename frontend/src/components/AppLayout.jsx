@@ -112,8 +112,15 @@ export default function AppLayout({ children }) {
         </div>
       )}
 
-      {/* Logout at bottom of sidebar */}
-      <div className="p-3 border-t border-border/50">
+      {/* Bottom actions */}
+      <div className="p-3 border-t border-border/50 space-y-1">
+        <Link
+          to="/account"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all"
+        >
+          <User size={18} className="shrink-0" />
+          {!collapsed && <span>My Account</span>}
+        </Link>
         <button
           onClick={logout}
           className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all w-full"
@@ -174,7 +181,15 @@ export default function AppLayout({ children }) {
               );
             })}
           </div>
-          <div className="p-3 mt-auto border-t border-border/50">
+          <div className="p-3 mt-auto border-t border-border/50 space-y-1">
+            <Link
+              to="/account"
+              onClick={() => setMobileOpen(false)}
+              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all w-full"
+            >
+              <User size={18} />
+              <span>My Account</span>
+            </Link>
             <button
               onClick={() => { logout(); setMobileOpen(false); }}
               className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all w-full"
